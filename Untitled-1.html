@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مخطط الإنجاز الطبي الشامل - التايمر الحي</title>
+    <style>
+        :root { 
+            --red: #ff5252; 
+            --yellow1: #fff59d; 
+            --yellow2: #fff176; 
+            --yellow3: #ffd600; 
+            --blue: #1976d2;
+            --white: #ffffff;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f4f8; padding: 15px; margin: 0; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        
+        .exam-banner { background: #263238; color: #ffeb3b; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px solid #ffeb3b; }
+
+        .plan-engine { background: #e3f2fd; padding: 20px; border-radius: 15px; border: 2px solid var(--blue); margin-bottom: 25px; text-align: center; }
+        .input-flex { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; justify-content: center; }
+        .result-box { background: white; padding: 15px; border-radius: 10px; border-right: 5px solid var(--blue); font-weight: bold; line-height: 1.8; color: #0d47a1; margin-top: 15px; }
+
+        /* التايمر الحي */
+        .live-timer-display { font-size: 3em; font-weight: bold; color: #d32f2f; margin: 15px 0; font-family: monospace; background: white; display: inline-block; padding: 10px 30px; border-radius: 10px; border: 3px solid #d32f2f; }
+        .btn-start { background: #2e7d32; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin: 5px; }
+        .btn-stop { background: #c62828; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin: 5px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 10px; overflow: hidden; font-size: 14px; }
+        th { background: var(--blue); color: white; padding: 12px; position: sticky; top: 0; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #ddd; font-weight: 600; }
+        
+        .row-white { background-color: var(--white); color: #333; }
+        .row-red { background-color: var(--red) !important; color: white !important; }
+        .row-red select { color: black; }
+        .row-yellow1 { background-color: var(--yellow1); }
+        .row-yellow2 { background-color: var(--yellow2); }
+        .row-yellow3 { background-color: var(--yellow3); }
+
+        input, select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="exam-banner">
+        <span>⏳ المتبقي على الامتحان النهائي:</span>
+        <input type="datetime-local" id="exam-date-input" onchange="saveExamDate()">
+        <div id="exam-countdown" style="margin-top:10px; font-size: 1.4em;">-- يوم -- ساعة -- دقيقة</div>
+    </div>
+
+    <div class="stats-bar" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div class="stat-card" style="background: #2196f3; color: white; padding: 10px; border-radius: 8px; text-align: center;">
+            <b>الإجمالي العام</b><br><span id="stat-total-all">0 موضوع | 0 صفحة</span>
+        </div>
+        <div class="stat-card" style="background: #78909c; color: white; padding: 10px; border-radius: 8px; text-align: center;">
+            <b>لم يبدأ (أبيض)</b><br><span id="stat-white-all">0 موضوع | 0 صفحة</span>
+        </div>
+        <div class="stat-card" style="background: #ff5252; color: white; padding: 10px; border-radius: 8px; text-align: center;">
+            <b>مسموع (أحمر)</b><br><span id="stat-red-all">0 موضوع | 0 صفحة</span>
+        </div>
+        <div class="stat-card" style="background: #ffd600; color: black; padding: 10px; border-radius: 8px; text-align: center;">
+            <b>تمت المراجعة (أصفر)</b><br><span id="stat-yellow-all">0 موضوع | 0 صفحة</span>
+        </div>
+    </div>
+
+    <div class="plan-engine">
+        <h3>🎯 تحدي اليوم (التايمر الحي):</h3>
+        <div class="input-flex">
+            <span>هدفي اليوم:</span>
+            <select id="goal-type" onchange="calculateLogic()">
+                <option value="all">كل المتبقي (أبيض + أحمر)</option>
+                <option value="white">الأبيض فقط (الجديد)</option>
+                <option value="red">الأحمر فقط (المسموع)</option>
+            </select>
+            <span>في مدة:</span>
+            <input type="number" id="input-minutes" value="120" style="width:70px;">
+            <span>دقيقة.</span>
+        </div>
+        
+        <button class="btn-start" onclick="startPlanTimer()">ابدأ الخطة الآن ▶️</button>
+        <button class="btn-stop" onclick="stopPlanTimer()">إيقاف مؤقت ⏹️</button>
+        
+        <div class="live-timer-display" id="live-timer">00:00:00</div>
+        <div id="logic-results" class="result-box">حدد هدفك واضغط ابدأ..</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>القسم</th>
+                <th>الموضوع</th>
+                <th>الصفحات</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody id="data-body"></tbody>
+    </table>
+</div>
+
+<script>
+    // القائمة الكاملة مع تحديث عدد الصفحات حسب الصورة الجديدة
+    let initialData = [
+        { cat: "Chest", task: "COPD", p: 7, status: "red" },
+        { cat: "Chest", task: "Bronchial Asthma", p: 14, status: "yellow1" },
+        { cat: "Chest", task: "TB", p: 13, status: "red" },
+        { cat: "Chest", task: "Pneumonia", p: 10, status: "white" },
+        { cat: "Ophthalmology", task: "Conjunctivitis", p: 20, status: "white" },
+        { cat: "Ophthalmology", task: "Keratitis", p: 14, status: "white" },
+        { cat: "Ophthalmology", task: "Uveitis", p: 14, status: "white" },
+        { cat: "Ophthalmology", task: "Angle Closure Glaucoma", p: 7, status: "white" },
+        { cat: "Hematology", task: "Anemia Part 1", p: 16, status: "white" },
+        { cat: "Hematology", task: "Anemia Part 2", p: 14, status: "red" },
+        { cat: "Nephrology", task: "Renal Function & Dysfunction", p: 19, status: "white" },
+        { cat: "Nephrology", task: "Kidney Disease Symptoms", p: 23, status: "yellow1" },
+        { cat: "Nephrology", task: "Physiology of Kidney", p: 12, status: "yellow1" },
+        { cat: "Nephrology", task: "Urinary Malignancies", p: 10, status: "yellow1" },
+        { cat: "GIT", task: "GURD & PUD", p: 9, status: "white" }
+    ];
+
+    let subjects = JSON.parse(localStorage.getItem('medStudyDataFull')) || initialData;
+    let planInterval;
+    let remainingSeconds = 0;
+
+    function saveExamDate() { localStorage.setItem('examDateFull', document.getElementById('exam-date-input').value); }
+    document.getElementById('exam-date-input').value = localStorage.getItem('examDateFull') || "";
+
+    function render() {
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        let counts = { totalM: 0, totalP: 0, whiteM: 0, whiteP: 0, redM: 0, redP: 0, yellowM: 0, yellowP: 0 };
+
+        subjects.forEach((item, index) => {
+            counts.totalM++;
+            counts.totalP += item.p;
+            if (item.status === 'white') { counts.whiteM++; counts.whiteP += item.p; }
+            else if (item.status === 'red') { counts.redM++; counts.redP += item.p; }
+            else if (item.status.includes('yellow')) { counts.yellowM++; counts.yellowP += item.p; }
+
+            const tr = document.createElement('tr');
+            tr.className = `row-${item.status}`;
+            tr.innerHTML = `
+                <td>${item.cat}</td>
+                <td>${item.task}</td>
+                <td><input type="number" value="${item.p}" style="width:45px" onchange="updateP(${index}, this.value)"></td>
+                <td>
+                    <select onchange="updateS(${index}, this.value)">
+                        <option value="white" ${item.status==='white'?'selected':''}>⚪ أبيض (متبقي)</option>
+                        <option value="red" ${item.status==='red'?'selected':''}>🔴 أحمر (مسموع)</option>
+                        <option value="yellow1" ${item.status==='yellow1'?'selected':''}>🟡 أصفر 1 (مراجعة)</option>
+                        <option value="yellow2" ${item.status==='yellow2'?'selected':''}>⭐ أصفر 2</option>
+                        <option value="yellow3" ${item.status==='yellow3'?'selected':''}>🏆 أصفر 3</option>
+                    </select>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+
+        document.getElementById('stat-total-all').innerText = `${counts.totalM} موضوع | ${counts.totalP} صفحة`;
+        document.getElementById('stat-white-all').innerText = `${counts.whiteM} موضوع | ${counts.whiteP} صفحة`;
+        document.getElementById('stat-red-all').innerText = `${counts.redM} موضوع | ${counts.redP} صفحة`;
+        document.getElementById('stat-yellow-all').innerText = `${counts.yellowM} موضوع | ${counts.yellowP} صفحة`;
+
+        calculateLogic();
+        localStorage.setItem('medStudyDataFull', JSON.stringify(subjects));
+    }
+
+    function updateP(i, v) { subjects[i].p = parseInt(v) || 0; render(); }
+    function updateS(i, v) { subjects[i].status = v; render(); }
+
+    function startPlanTimer() {
+        clearInterval(planInterval);
+        if (remainingSeconds <= 0) remainingSeconds = parseInt(document.getElementById('input-minutes').value) * 60;
+        planInterval = setInterval(() => {
+            if(remainingSeconds <= 0) { clearInterval(planInterval); return; }
+            remainingSeconds--;
+            displayTime();
+            calculateLogic();
+        }, 1000);
+    }
+
+    function stopPlanTimer() { clearInterval(planInterval); }
+
+    function displayTime() {
+        let h = Math.floor(remainingSeconds / 3600);
+        let m = Math.floor((remainingSeconds % 3600) / 60);
+        let s = remainingSeconds % 60;
+        document.getElementById('live-timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function calculateLogic() {
+        const goal = document.getElementById('goal-type').value;
+        const currentMins = remainingSeconds > 0 ? (remainingSeconds / 60) : parseInt(document.getElementById('input-minutes').value);
+        let targetPages = 0;
+        subjects.forEach(s => {
+            if(goal === 'all' && (s.status === 'white' || s.status === 'red')) targetPages += s.p;
+            else if(goal === 'white' && s.status === 'white') targetPages += s.p;
+            else if(goal === 'red' && s.status === 'red') targetPages += s.p;
+        });
+        if(targetPages === 0) { document.getElementById('logic-results').innerHTML = "الهدف مكتمل! 🎉"; return; }
+        const minsPerPage = (currentMins / targetPages).toFixed(1);
+        document.getElementById('logic-results').innerHTML = 
+            `المتبقي: ${targetPages} صفحة | الوقت لكل صفحة: <span style="color:red">${minsPerPage} دقيقة</span>.<br>` +
+            `السرعة المطلوبة: ${(60/minsPerPage).toFixed(1)} صفحة/ساعة.`;
+    }
+
+    setInterval(() => {
+        const target = new Date(document.getElementById('exam-date-input').value).getTime();
+        const now = new Date().getTime();
+        const diff = target - now;
+        if (!target || diff < 0) return;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        document.getElementById('exam-countdown').innerText = `${d} يوم و ${h}:${m}`;
+    }, 1000);
+
+    render();
+</script>
+</body>
+</html>
