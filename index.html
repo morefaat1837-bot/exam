@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مخطط الإنجاز الطبي - نسخة القالب</title>
+    <title>مخطط الإنجاز الطبي - النسخة المطورة</title>
     <style>
         :root { 
-            --red: #ff5252; --yellow1: #fff59d; --yellow2: #fff176; 
+            --red: #ff5252; --yellow1: #fff59d; --yellow2: #ffd54f; 
             --yellow3: #ffd600; --blue: #1976d2; --white: #ffffff;
+            --orange: #ffb74d; /* لون المراجعة الثانية */
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f4f8; padding: 15px; margin: 0; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
@@ -21,11 +22,14 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: 10px; overflow: hidden; }
         th { background: var(--blue); color: white; padding: 12px; }
         td { padding: 10px; text-align: center; border-bottom: 1px solid #ddd; font-weight: 600; }
+        
+        /* ألوان الصفوف بناءً على الحالة */
         .row-white { background-color: var(--white); }
         .row-red { background-color: #ffcdd2 !important; color: #b71c1c !important; }
         .row-yellow1 { background-color: var(--yellow1); }
+        .row-yellow2 { background-color: var(--orange); } /* ستايل المراجعة الثانية */
+        
         input, select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
-        /* استايل موحد لصور الاستيكرات */
         .sticker-img { width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto 10px; }
     </style>
 </head>
@@ -38,18 +42,21 @@
         <div id="exam-countdown" style="margin-top:10px; font-size: 1.4em;">-- يوم -- ساعة</div>
     </div>
 
-    <div class="stats-bar" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
+    <div class="stats-bar" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;">
         <div class="stat-card" style="background: #2196f3; color: white; padding: 10px; border-radius: 8px; text-align: center;">
-            <b>الإجمالي العام</b><br><span id="stat-total-all">0 موضوع</span>
+            <b>الإجمالي</b><br><span id="stat-total-all">0</span>
         </div>
         <div class="stat-card" style="background: #78909c; color: white; padding: 10px; border-radius: 8px; text-align: center;">
-            <b>لم يبدأ (أبيض)</b><br><span id="stat-white-all">0 صفحة</span>
+            <b>جديد ⚪</b><br><span id="stat-white-all">0</span>
         </div>
         <div class="stat-card" style="background: #ff5252; color: white; padding: 10px; border-radius: 8px; text-align: center;">
-            <b>مسموع (أحمر)</b><br><span id="stat-red-all">0 صفحة</span>
+            <b>مسموع 🔴</b><br><span id="stat-red-all">0</span>
         </div>
         <div class="stat-card" style="background: #ffd600; color: black; padding: 10px; border-radius: 8px; text-align: center;">
-            <b>مراجع (أصفر)</b><br><span id="stat-yellow-all">0 صفحة</span>
+            <b>مراجعة 1 🟡</b><br><span id="stat-yellow1-all">0</span>
+        </div>
+        <div class="stat-card" style="background: var(--orange); color: black; padding: 10px; border-radius: 8px; text-align: center;">
+            <b>مراجعة 2 🟠</b><br><span id="stat-yellow2-all">0</span>
         </div>
     </div>
 
@@ -62,6 +69,7 @@
                 <option value="white">جديد (أبيض)</option>
                 <option value="red">مسموع (أحمر)</option>
                 <option value="yellow1">مراجعة 1</option>
+                <option value="yellow2">مراجعة 2</option>
             </select>
             <span>أنهي الساعة:</span>
             <input type="time" id="end-time" onchange="calculateRemainingTime()">
@@ -86,23 +94,9 @@
 </div>
 
 <script>
-    // البيانات الافتراضية (تقدر تغير الأسماء العربي هنا)
     let initialData = [
         { cat: "Chest", task: "COPD", p: 7, status: "red" },
-        { cat: "Chest", task: "Bronchial Asthma", p: 14, status: "yellow1" },
-        { cat: "Chest", task: "TB", p: 13, status: "red" },
-        { cat: "Chest", task: "Pneumonia", p: 10, status: "white" },
-        { cat: "Ophthalmology", task: "Conjunctivitis", p: 20, status: "white" },
-        { cat: "Ophthalmology", task: "Keratitis", p: 14, status: "white" },
-        { cat: "Ophthalmology", task: "Uveitis", p: 14, status: "white" },
-        { cat: "Ophthalmology", task: "Glaucoma", p: 7, status: "white" },
-        { cat: "Hematology", task: "Anemia 1", p: 16, status: "white" },
-        { cat: "Hematology", task: "Anemia 2", p: 14, status: "red" },
-        { cat: "Nephrology", task: "Renal Function", p: 19, status: "white" },
-        { cat: "Nephrology", task: "Symptoms", p: 23, status: "yellow1" },
-        { cat: "Nephrology", task: "Physiology", p: 12, status: "yellow1" },
-        { cat: "Nephrology", task: "Malignancies", p: 10, status: "yellow1" },
-        { cat: "GIT", task: "GURD & PUD", p: 9, status: "white" }
+        { cat: "Nephrology", task: "Malignancies", p: 10, status: "yellow2" }
     ];
 
     let subjects = JSON.parse(localStorage.getItem('medStudyDataFull')) || initialData;
@@ -117,30 +111,22 @@
         if(!body) return;
         body.innerHTML = '';
         
-        // تجهيز العدادات (مواضيع وصفحات) لكل حالة
         let counts = { 
             totalM: 0, totalP: 0, 
             whiteM: 0, whiteP: 0, 
             redM: 0, redP: 0, 
-            yellowM: 0, yellowP: 0 
+            y1M: 0, y1P: 0,
+            y2M: 0, y2P: 0 
         };
 
         subjects.forEach((item, index) => {
             counts.totalM++;
             counts.totalP += item.p;
             
-            if (item.status === 'white') { 
-                counts.whiteM++; 
-                counts.whiteP += item.p; 
-            }
-            else if (item.status === 'red') { 
-                counts.redM++; 
-                counts.redP += item.p; 
-            }
-            else if (item.status.includes('yellow')) { 
-                counts.yellowM++; 
-                counts.yellowP += item.p; 
-            }
+            if (item.status === 'white') { counts.whiteM++; counts.whiteP += item.p; }
+            else if (item.status === 'red') { counts.redM++; counts.redP += item.p; }
+            else if (item.status === 'yellow1') { counts.y1M++; counts.y1P += item.p; }
+            else if (item.status === 'yellow2') { counts.y2M++; counts.y2P += item.p; }
 
             const tr = document.createElement('tr');
             tr.className = `row-${item.status}`;
@@ -152,18 +138,19 @@
                     <select onchange="updateS(${index}, this.value)">
                         <option value="white" ${item.status==='white'?'selected':''}>⚪ جديد</option>
                         <option value="red" ${item.status==='red'?'selected':''}>🔴 مسموع</option>
-                        <option value="yellow1" ${item.status==='yellow1'?'selected':''}>🟡 مراجعة</option>
+                        <option value="yellow1" ${item.status==='yellow1'?'selected':''}>🟡 مراجعة 1</option>
+                        <option value="yellow2" ${item.status==='yellow2'?'selected':''}>🟠 مراجعة 2</option>
                     </select>
                 </td>
             `;
             body.appendChild(tr);
         });
 
-        // التحديث في الـ HTML ليظهر (عدد المواضيع | عدد الصفحات) في كل الخانات
-        document.getElementById('stat-total-all').innerHTML = `${counts.totalM} موضوع <br> ${counts.totalP} صفحة`;
-        document.getElementById('stat-white-all').innerHTML = `${counts.whiteM} موضوع <br> ${counts.whiteP} صفحة`;
-        document.getElementById('stat-red-all').innerHTML = `${counts.redM} موضوع <br> ${counts.redP} صفحة`;
-        document.getElementById('stat-yellow-all').innerHTML = `${counts.yellowM} موضوع <br> ${counts.yellowP} صفحة`;
+        document.getElementById('stat-total-all').innerHTML = `${counts.totalM} م | ${counts.totalP} ص`;
+        document.getElementById('stat-white-all').innerHTML = `${counts.whiteM} م | ${counts.whiteP} ص`;
+        document.getElementById('stat-red-all').innerHTML = `${counts.redM} م | ${counts.redP} ص`;
+        document.getElementById('stat-yellow1-all').innerHTML = `${counts.y1M} م | ${counts.y1P} ص`;
+        document.getElementById('stat-yellow2-all').innerHTML = `${counts.y2M} م | ${counts.y2P} ص`;
         
         localStorage.setItem('medStudyDataFull', JSON.stringify(subjects));
         calculateLogic();
@@ -210,65 +197,55 @@
         const goal = document.getElementById('plan-type').value;
         const currentMins = remainingSeconds / 60;
         let targetPages = 0;
+        let targetTasks = 0;
 
         subjects.forEach(s => {
-            if (goal === 'all' && (s.status === 'white' || s.status === 'red')) targetPages += s.p;
-            else if (goal === s.status) targetPages += s.p;
+            if (goal === 'all' && (s.status === 'white' || s.status === 'red')) {
+                targetPages += s.p; targetTasks++;
+            } else if (goal === s.status) {
+                targetPages += s.p; targetTasks++;
+            }
         });
 
         const resBox = document.getElementById('logic-results');
-        if(!resBox) return; // تأمين
-
         if(targetPages === 0 || currentMins <= 0) {
-            // بناء الـ HTML النهائي - دمج الاستيكر مع عدد المواضيع والصفحات
-        resBox.innerHTML = 
-            `<img src="${stickerLink}" class="sticker-img" onerror="this.style.display='none'">` +
-            `<div style="color:red; font-size:18px; margin-bottom:5px;">${reactionText}</div>` +
-            `<div style="background:#f0f7ff; padding:10px; border-radius:8px;">` +
-                `<b>المطلوب:</b> ${targetPages} صفحة في ${subjects.filter(s => goal==='all' ? (s.status==='white'||s.status==='red') : s.status===goal).length} موضوع <br>` +
-                `<b>السرعة:</b> <span style="color:red">${minsPerPage} دقيقة</span> لكل صفحة` +
-            `</div>`;
+            resBox.innerHTML = "حدد هدفك ووقت النهاية (يجب وجود صفحات في الحالة المختارة)";
+            return;
         }
 
         const minsPerPage = (currentMins / targetPages).toFixed(1);
-        
-        // --- الجزء الخاص بتعديل الاستيكرات والكلمات ---
         let stickerLink = "";
         let reactionText = "";
 
         if (minsPerPage > 15) {
-            // الحالة 1: الخطة الرايقة جداً
             stickerLink = "https://i.ibb.co/tw2GC6cM/bc4d0233-eec1-4cc8-8a60-34885603b95f.webp"; 
-            reactionText = "أسد يلا متخافش ";
+            reactionText = "أسد يلا متخافش";
         } else if (minsPerPage > 8) {
-            // الحالة 2: الخطة المتوسطة (مذاكرة بجد)
             stickerLink = "https://i.ibb.co/tpt5Lqyx/d2047bcb-86cd-49e1-8132-2a7b1f733212.webp";
-            reactionText = "ربنا يسهل";
+            reactionText = "ربنا يسهل.. شد حيلك";
         } else if (minsPerPage > 4) {
-            // الحالة 3: الخطة الصعبة (بدأ التوتر)
             stickerLink = "https://i.ibb.co/YmMS2nB/30667500-744c-4f97-96d8-ab357359b6d3.webp";
-            reactionText = "!!!انت فاكر نفسك البيار!!!";
+            reactionText = "إنجز! الوقت بيطير";
         } else {
-            // الحالة 4: الخطة المستحيلة (انتحار)
             stickerLink = "https://i.ibb.co/wr0XTDsy/b14a4954-11b4-4d13-8d6a-422524aaf10c.webp";
-            reactionText = "أحا ابقي قابلني يعلق";
+            reactionText = "أحا.. دي مستحيلة يا دكتور";
         }
-        // ----------------------------------------------
 
-        // بناء الـ HTML النهائي للعرض (بيانات + استيكر + كلمة)
         resBox.innerHTML = 
-            `<img src="${stickerLink}" alt="Sticker" class="sticker-img" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3221/3221291.png';">` +
+            `<img src="${stickerLink}" class="sticker-img" onerror="this.style.display='none'">` +
             `<div style="color:red; font-size:18px">${reactionText}</div>` +
-            `<div style="font-size:14px; color:#555">المتبقي: ${targetPages} صفحة | لكل صفحة: ${minsPerPage} دقيقة</div>`;
+            `<div style="font-size:14px; color:#555">المطلوب: ${targetPages} صفحة في ${targetTasks} موضوع | لكل صفحة: ${minsPerPage} دقيقة</div>`;
     }
 
     setInterval(() => {
-        const target = new Date(document.getElementById('exam-date-input').value).getTime();
-        const diff = target - new Date().getTime();
-        if (target && diff > 0) {
-            const d = Math.floor(diff / 86400000);
-            const h = Math.floor((diff % 86400000) / 3600000);
-            document.getElementById('exam-countdown').innerText = `${d} يوم و ${h} ساعة`;
+        const targetInput = document.getElementById('exam-date-input').value;
+        if (targetInput) {
+            const diff = new Date(targetInput).getTime() - new Date().getTime();
+            if (diff > 0) {
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                document.getElementById('exam-countdown').innerText = `${d} يوم و ${h} ساعة`;
+            }
         }
     }, 1000);
 
