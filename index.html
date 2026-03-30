@@ -102,14 +102,12 @@
 <script>
     // البيانات الجديدة بناءً على طلبك
     let initialData = [
-        { cat: "Psychiatry", task: "Introduction & Symptoms", p: 14, status: "white" },
-        { cat: "Psychiatry", task: "History & Mental State Exam", p: 10, status: "white" },
-        { cat: "Mood Disorders", task: "Major Depressive", p: 10, status: "white" },
-        { cat: "Mood Disorders", task: "Bipolar", p: 9, status: "white" },
-        { cat: "Anxiety 1", task: "Anxiety", p: 7, status: "white" },
-        { cat: "Anxiety 1", task: "OCD", p: 3, status: "white" },
-        { cat: "Reaum", task: "Trauma , Stress", p: 5, status: "white" },
-        { cat: "Psychiatry", task: "Somatic Symptoms Disorders", p: 14, status: "white" }
+        { cat: "[Forensic]", task: "Death", p: 12, status: "white" },
+        { cat: "[Forensic]", task: "Postmortem changes", p: 23, status: "white" },
+        { cat: "[Forensic]", task: "Wound", p: 14, status: "white" },
+        { cat: "[Forensic]", task: "Identification", p: 10, status: "white" },
+        { cat: "[Forensic]", task: "Head Injury 1", p: 5, status: "white" },
+        { cat: "[Forensic]", task: "Head Injury 2", p: 9, status: "white" },
     ];
 
     let subjects = JSON.parse(localStorage.getItem('medStudyDataFull')) || initialData;
