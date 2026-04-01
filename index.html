@@ -102,12 +102,16 @@
 <script>
     // البيانات الجديدة بناءً على طلبك
     let initialData = [
-        { cat: "[Forensic]", task: "Death", p: 12, status: "white" },
-        { cat: "[Forensic]", task: "Postmortem changes", p: 23, status: "white" },
-        { cat: "[Forensic]", task: "Wound", p: 14, status: "white" },
-        { cat: "[Forensic]", task: "Identification", p: 10, status: "white" },
-        { cat: "[Forensic]", task: "Head Injury 1", p: 5, status: "white" },
-        { cat: "[Forensic]", task: "Head Injury 2", p: 9, status: "white" },
+        { cat: "[Community]", task: "General epidemiology", p: 14, status: "white" },
+        { cat: "[Community]", task: "Viral hepatitis", p: 9, status: "white" },
+        { cat: "[Community]", task: "HIV", p: 7, status: "white" },
+        { cat: "[Community]", task: "Droplet (Meningitis)", p: 6, status: "white" },
+        { cat: "[Community]", task: "Droplet (bird flu)", p: 3, status: "white" },
+        { cat: "[Community]", task: "Droplet (seasonal flu)", p: 4.5, status: "white" },
+        { cat: "[Community]", task: "Droplet (chicken pox)", p: 1.5, status: "white" },
+        { cat: "[Community]", task: "Bacterial droplet (Tuberculosis)", p: 7, status: "white" },
+        { cat: "[Community]", task: "Food born (Typhoid fever).", p: 2.5, status: "white" },
+        { cat: "[Community]", task: "Food born (brucellosis).", p: 1.5, status: "white" },
     ];
 
     let subjects = JSON.parse(localStorage.getItem('medStudyDataFull')) || initialData;
