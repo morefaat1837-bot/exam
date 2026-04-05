@@ -102,17 +102,13 @@
 <script>
     // البيانات الجديدة بناءً على طلبك
     let initialData = [
-        { cat: "[Community]", task: "General epidemiology", p: 14, status: "white" },
-        { cat: "[Community]", task: "Viral hepatitis", p: 9, status: "white" },
-        { cat: "[Community]", task: "HIV", p: 7, status: "white" },
-        { cat: "[Community]", task: "Droplet (Meningitis)", p: 6, status: "white" },
-        { cat: "[Community]", task: "Droplet (bird flu)", p: 3, status: "white" },
-        { cat: "[Community]", task: "Droplet (seasonal flu)", p: 4.5, status: "white" },
-        { cat: "[Community]", task: "Droplet (chicken pox)", p: 1.5, status: "white" },
-        { cat: "[Community]", task: "Bacterial droplet (Tuberculosis)", p: 7, status: "white" },
-        { cat: "[Community]", task: "Food born (Typhoid fever).", p: 2.5, status: "white" },
-        { cat: "[Community]", task: "Food born (brucellosis).", p: 1.5, status: "white" },
-    ];
+        { cat: "[Professionalism]", task: "Basics of Communication in Medical Practice 1", p: 3.5, status: "white" },
+        { cat: "[Professionalism]", task: "Basics of Communication in Medical Practice 2", p: 3.5, status: "white" },
+        { cat: "[Professionalism]", task: "Team Communication.", p: 3, status: "white" },
+        { cat: "[Professionalism]", task: "Communicating with Special Patients", p: 3.5, status: "white" },
+        { cat: "[Professionalism]", task: "Communicating with Patients’ Families.", p: 2.5, status: "white" },
+        { cat: "[Professionalism]", task: "Building Trust in the Patient-Doctor Relationship.", p: 2.5, status: "white" },
+        ];
 
     let subjects = JSON.parse(localStorage.getItem('medStudyDataFull')) || initialData;
     let remainingSeconds = 0;
